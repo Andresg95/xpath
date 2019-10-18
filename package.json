@@ -1,0 +1,15 @@
+{
+  "name": "xpath_local",
+  "version": "1.0.0",
+  "description": "xPathDynamicScrapper",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Andres G.",
+  "license": "MIT",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.3",
+    "wget-improved": "^3.0.2"
+  }
+}
