@@ -28,49 +28,35 @@ const constructTree = async () => {
     const $ = cheerio.load(string)
     $.html();
 
+
+    const html = $('*').toArray()[0];
+
+    let stringedHTML = (JSON.stringify(recursive(html)));
+    let trimmed = stringedHTML.replace(/\"\n"/g, '');
+
+    let final = JSON.parse(trimmed);
+
+    console.log(trimmed);
+    //console.log(final.html.values[4].body.values[1].h1.values[0].value);
+    
+
     //get all 
-    let input = $('#algo');
-    //console.log(input);   
-    //console.log($('li').next());
-    //console.log($.root().html());
-
     let allElem = $('*');
+    let input = $('#great');
 
-    //console.log("thttt", allElem[7].children)
+    console.log({input});
+    console.log("now this", allElem[7].attribs)
 
-    _.forEach(allElem[7].children, (es)=>{
+
+
+    /*
+    _.forEach(allElem[0].children, (es)=>{
         console.log("im ", es.type)
     })
 
-    console.log("recursive", recursiveChildCheck(allElem[2].children))
 
     _.forEach(allElem, (e, i)=>{
-        console.log("im index ", i, "and im",e.name, "and i have", e.children.length, "children")
-        let children = {};
-        // e.children.forEach(child=>{
-
-            //recursive function
-            //break point:
-            //if childs are not tag type.
-            // let flag = true;
-
-            // children.forEach(child => {
-            //     if(_.isEqual(child.type, "tag")){
-            //         flag = false;
-            //     }
-            // });
-
-
-
-            // if(_.isEqual(child.type, "tag")){
-            //     let type = child.type;
-            //     children={
-            //         ...children,
-            //         [type] : e.children[0].data || "null"
-            //     }   
-            // }
-
-        // })
+        console.log("im index ", i, "and im",e.name, "and i have", e.children.length, "children");
 
         let type = e.name;
         structure.body= {
@@ -80,48 +66,51 @@ const constructTree = async () => {
         };
 
     })
-    console.log(structure);
-
-  
-
+   
+*/
 };
 
-const recursiveChildCheck = (childs, structure) => {
-
-    // having {
-    //     body: {}
-    // }
-
-    let children = childs;
-    let mycurrentS = structure;
-
-    let currentTags = children.filter(e=> _.isEqual(e.type, "tag"))
-
-    //base case (no more tags inside, just text)
-    if (currentTags.length == 0){
-        //chldren has text elements 
-
-        //pass in the structure ?
-            return {
-                value: children[0].data || "null",
-                attributes : children[0].att || "null",
-                id: children[0].type || "NA",
-                class: "NA"
-             }
-    }
-   
-    if(currentTags.length > 0){
-
-        return (children, {
-            // new structure. structure 
-        })
-
-    }
-}
-
-
-
 constructTree();
+
+
+/**
+ * 
+ * obj {
+ *  type: string
+ *  children: obj[]
+ * }
+ * @param {*} obj 
+ * {
+ *   obj
+ * }
+ */
+
+const recursive=(obj)=>{
+
+
+    if(obj.type=="tag"){
+
+        const o = {
+            [obj.name] : {
+                class: obj.attribs.class || "NA",
+                id: obj.attribs.id || "NA",
+                attributes: obj.attribs || {},
+                values:obj.children.map(child=>{       
+                    return recursive(child)
+                })
+            }
+        }
+        delete o[obj.name].attributes.id;
+        delete o[obj.name].attributes.class;
+        
+        return o;
+    }
+    if(obj.type=="text"){
+        //base case
+        return obj.data != "\n" ? {value: obj.data} : obj.data
+    }
+
+}
 
 
 
