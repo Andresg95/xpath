@@ -1020,7 +1020,6 @@ $("#"+nomForm+" .sendForm").click(function(){
   if(!error){
     modalForm.modal({show:true});
 
-		
 			grecaptcha.ready(function() {
 			grecaptcha.execute('6Ldf3KYUAAAAAMt52_ba0-Y0n7KHeyhn7DaGqPlI', {action: 'send_form'}).then(function(token) {
 				console.log(token);
