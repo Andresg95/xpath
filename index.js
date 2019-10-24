@@ -33,7 +33,7 @@ const readData = () => {
  */
 
 
-const recursive = (obj,parent) => {
+const recursive = (obj, parent) => {
 
     if (obj.type == "tag") {
         //console.log(parent)
@@ -44,8 +44,8 @@ const recursive = (obj,parent) => {
                 id: obj.attribs.id || "NA",
                 attributes: obj.attribs || {},
                 xpath: currentParent,
-                values: obj.children.map((child,index) => {
-                    return recursive(child,`${currentParent}.values[${index}]`)
+                values: obj.children.map((child, index) => {
+                    return recursive(child, `${currentParent}.values[${index}]`)
                 })
             }
         }
@@ -58,11 +58,11 @@ const recursive = (obj,parent) => {
         //base case
         finalNodesXpaths.push({
             value: obj.data,
-            xpath :`${parent}.value`})
-        
+            xpath: `${parent}.value`
+        })
+
         return obj.data != "\n" ? { value: obj.data } : obj.data
     }
-
 }
 
 
@@ -76,34 +76,63 @@ const constructTree = async () => {
     $.html();
     const html = $('*').toArray()[0];
 
-    return (recursive(html,"", []));
+    return (recursive(html, "", []));
 };
 
 
 
 const matchingRegularExp = (number) => {
 
-    return new RegExp(number.toString(),"gm");
+    //si tienen diferente signos o un unico separador no hay problema
+
+    let numerals = new RegExp(/\d{1,100}[,.'\s]+/, "g"); //for numbers
+    //SI CONTIENE:
+    let groups = number.toString().match(numerals);
+    let lastGroup = groups[groups.length - 1]; //the last symbol used
+    let n = `\\${lastGroup.charAt(lastGroup.length - 1)}`
+
+    let firstGroup = groups[0];
+    let common = `\\${firstGroup.charAt(firstGroup.length - 1)}`
+
+    console.log("the common separator is ", { common });
+
+    //devuelve 2 grupos, los enteros y los decimales separados por el separator
+
+    let numGroups = RegExp(n, "g");
+    let decimalLength = number.toString().split(numGroups)[1].length
+    let wholeNs = number.toString().split(numGroups)[0]
+
+    console.log(wholeNs, decimalLength);
+
+    // \d+{1,3}[common]*[decimal]
+
+
+    //not finished
+    //let returnreGex = new RegExp(`/\\d+{1,3}[`, common, "]*[", n, "]/");
+    //console.log(returnreGex);
+
+
 };
+
 
 const getXpathsforValue = async (val) => {
     //main function.
     let html = await constructTree();
     let re = matchingRegularExp(val);
 
-       
-    results = finalNodesXpaths.filter((e)=>e.value.match(re))
-    console.log(results);
 
-    //html.values[4].body.values[1].h1.values[0].value
-    //concat varname. + xpath
-    
+    results = finalNodesXpaths.filter((e) => e.value.match(re))
+    //console.log({results});
 
-}
+    console.log(html);
 
+};
+getXpathsforValue("1 000 000,1");
 
 
 
 
-getXpathsforValue(2.43);
+
+
+
 
