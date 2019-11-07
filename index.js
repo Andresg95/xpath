@@ -119,17 +119,17 @@ const matchingRegularExp = (number) => {
 
 const getXpathsforValue = async (val) => {
     //main function.
-    let data = await constructTree();
+    let data = await constructTree(source);
     let html = data[0];
     let finalNodesXpaths = data[1];
     let results = valuesCleanUps(matchingRegularExp(val), finalNodesXpaths)
-
-    console.log({html});
     
-    console.log({
-        countResults: results.length
-    },
-        { results });
+
+   
+    // console.log({
+    //     countResults: results.length
+    // },
+    //     { results });
 
     return {
         html,
@@ -161,13 +161,13 @@ const valuesCleanUps = (re, finalNodesXpaths) => {
 
 const main = async () => {
 
-
     let { html,
         results,
-    } = await getXpathsforValue("0,41");
+    } = await getXpathsforValue("100.000,56");
     //set up aarray with aliases [{xpath, alias}]
     let myalias = results.map((res)=>{return {
         alias: "Myvalue",
+        value: res.value,
         xpath: res.xpath,
         id: res.id,
         Class: res.Class,
@@ -184,43 +184,71 @@ const recurrentExecution = async (source, results, html) => {
     //we have current html object, nodevalues with xpath, and results.
     //take xpath, from results.
 
+    //console.log("in recurrent",{source}, {results}, {html});
 
+    
     let count = 0;
     const intervalObject = setInterval(async () => {
         count++;
         console.log(count, "seconds passed");
         if (count % 5 == 0) {
+            //in case on new scrap
+            //getXpathsforValue("0,41")
+
+            let alias ="Myvalue";
+            let spxpath = results.filter((o)=>o.alias==alias)[0];
+            let foundByxpath= (!_.isUndefined((_.get(html, spxpath.xpath))) ? true : false);
+           
+            //possible switch (found xpath, found class id attributes, NOT found)
+
+            if(foundByxpath){
+
+                let updatedDAta = {
+                    valueInPage: _.get(html, spxpath.xpath), //value obtained in html
+                    alias: spxpath.alias,
+                    storedValue: spxpath.value, //cleaned stored value
+                    id: _.get(html, spxpath.id),
+                    Class:  _.get(html, spxpath.Class),
+                    attributes: _.get(html, spxpath.attributes)
+                }
+                console.log({updatedDAta});
+                                   
+
+            }else{
+
+                //try look for id, classes or attributes.
+
+
+                console.log({results})
+                console.log("finito");
+                
+                // let updatedDAta = {
+                //     valueInPage: _.get(html, spxpath.xpath), //value obtained in html
+                //     alias: spxpath.alias,
+                //     storedValue: spxpath.value, //cleaned stored value
+                //     id: _.get(html, spxpath.id),
+                //     Class:  _.get(html, spxpath.Class),
+                //     attributes: _.get(html, spxpath.attributes)
+                // 
+
+
+            }
+
+                    
+            //relear la pagina (analyze class, id, attributes.)
+            /*
             //releer la pagina
                 let HTML =  await fetchData(source);
                 const $ = cheerio.load(HTML)
                 $.html();
                 const html = $('*').toArray()[0];
-                console.log("ngaa", {html})
-
+               // console.log("ngaa", {html})
                 //getbackrecursive
-                [(recursive(html, "", [])), finalNodesXpaths];
-                
-
-
-            let alias ="Myvalue";
-            let spxpath = results.filter((o)=>o.alias==alias)[0];
-        
-            let sec = {
-                value: _.get(html, results[0].xpath),
-                id: _.get(html, spxpath.id),
-                Class:  _.get(html, spxpath.Class),
-                attributes: _.get(html, spxpath.attributes)
-        
-            }
+               // let data = constructTree(source);
+                //[(recursive(html, "", [])), finalNodesXpaths];       
         
             console.log({sec});
         
-
-
-
-
-
-
             //values for first coincidence:
             let second = {
                 value: _.get(HTML, results[0].xpath),
@@ -230,7 +258,7 @@ const recurrentExecution = async (source, results, html) => {
             }
 
             console.log("new page, same stored paths",{second});
-
+            */
         }
 
         if (count == 20) {
