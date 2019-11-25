@@ -26,7 +26,7 @@ const matchingRegularExp = (number) => {
     if (groups.length == 1) {
 
         let decimalSeparator = groups[0].charAt(groups[0].length - 1) != " " ? `\\${groups[0].charAt(groups[0].length - 1)}` : "\\s";
-       // console.log({ decimalSeparator });
+        // console.log({ decimalSeparator });
         let numGroups = RegExp(decimalSeparator, "g");
         let decimalLength = number.toString().split(numGroups)[1].length
         let wholeRegex = `(\\+\\-)?(\\d{1,100}${decimalSeparator})(\\d{${decimalLength}})`
